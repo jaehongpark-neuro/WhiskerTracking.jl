@@ -130,6 +130,14 @@ function training_button_cb(w::Ptr,user_data::Tuple{Tracker_Handles})
 
     han, = user_data
 
+    #Check if the number of features in your training data set matches your number of features
+    #in the model. If they do not, remove the features at the end of the loaded model,
+    #and replace with blanks
+    if size(han.nn.labels,3) != features(han.nn.hg)
+        change_hourglass_output(han.nn.hg,size(han.nn.labels,1),size(han.nn.labels,3))
+        han.nn.features = features(han.nn.hg)
+    end
+
     dtrn=make_training_batch(han.nn.imgs,han.nn.labels);
 
     myadam=Adam(lr=1e-3)
@@ -215,17 +223,17 @@ function calculate_whiskers(han,total_frames=han.max_frames,batch_size=32,loadin
     preds=zeros(Float32,han.nn.features,3,total_frames)
     preds=convert(SharedArray,preds)
 
-    kernel_pad = WhiskerTracking.create_padded_kernel(size(han.nn.labels,1),size(han.nn.labels,2),1)
+    kernel_pad = WhiskerTracking_HG.create_padded_kernel(size(han.nn.labels,1),size(han.nn.labels,2),1)
     k_fft = fft(kernel_pad)
 
     set_gtk_property!(han.b["dl_predict_prog"],:fraction,0.0)
-    WhiskerTracking.set_testing(han.nn.hg,false)
+    WhiskerTracking_HG.set_testing(han.nn.hg,false)
 
     frame_num = 1
 
     while (frame_num < div(total_frames,loading_size)*loading_size)
 
-        run(WhiskerTracking.ffmpeg_cmd(frame_num/25,han.wt.vid_name,loading_size,"test5.yuv"))
+        run(WhiskerTracking_HG.ffmpeg_cmd(frame_num/25,han.wt.vid_name,loading_size,"test5.yuv"))
         read!("test5.yuv",temp_frames)
 
         temp_frames_cu[:]=convert(CuArray,temp_frames)
@@ -270,7 +278,7 @@ function calculate_whiskers(han,total_frames=han.max_frames,batch_size=32,loadin
 
     set_gtk_property!(han.b["dl_predict_prog"],:fraction,1.0)
 
-    WhiskerTracking.set_testing(han.nn.hg,true)
+    WhiskerTracking_HG.set_testing(han.nn.hg,true)
 
     convert(Array,preds)
 end
@@ -292,14 +300,14 @@ function mean_std_video_gpu(vid_name::String,total_frame_num,w=640,h=480,max_int
     running_std = convert(KnetArray,zeros(Float32,w,h,1))
     running_std_i = convert(KnetArray,zeros(Float32,w,h,1))
 
-    run(WhiskerTracking.ffmpeg_cmd(0,vid_name,loading_size,"test5.yuv"))
+    run(WhiskerTracking_HG.ffmpeg_cmd(0,vid_name,loading_size,"test5.yuv"))
     read!("test5.yuv",temp_frames)
 
     temp_frames2[:]=convert(KnetArray{Float32,3},temp_frames)
     running_mean_i[:,:,1] = mean(temp_frames2,dims=3) ./ max_intensity
 
     for i=1:load_number
-        run(WhiskerTracking.ffmpeg_cmd(i*loading_size / 25,vid_name,loading_size,"test5.yuv"))
+        run(WhiskerTracking_HG.ffmpeg_cmd(i*loading_size / 25,vid_name,loading_size,"test5.yuv"))
         read!("test5.yuv",temp_frames)
         temp_frames2[:]=convert(KnetArray{Float32,3},temp_frames)
 
@@ -332,6 +340,7 @@ function set_up_training(han,get_mean=true)
     end
 
     WT_reorder_whisker(han.woi,han.wt.pad_pos)
+    WT_reorder_whisker(han.woi_r,han.wt.pad_pos)
 
     han.nn.labels=make_heatmap_labels(han)
     han.nn.imgs=get_labeled_frames(han);
@@ -377,7 +386,7 @@ function predict_single_frame(han)
     temp_frame = temp_frame = convert(Array{Float32,2},han.current_frame)
     temp_frame = imresize(temp_frame,(256,256))
 
-    temp_frame = WhiskerTracking.normalize_new_images(temp_frame,k_mean)
+    temp_frame = WhiskerTracking_HG.normalize_new_images(temp_frame,k_mean)
 
     temp_frame = convert(KnetArray,reshape(temp_frame,(256,256,1,1)))
 

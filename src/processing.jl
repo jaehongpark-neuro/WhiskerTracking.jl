@@ -100,7 +100,16 @@ end
 
 function assign_woi(han::Tracker_Handles)
 
-    han.woi[han.frame] = deepcopy(han.wt.whiskers[han.woi_id])
+    whisk_temp = deepcopy(han.wt.whiskers[han.woi_id])
+    whisk_mean = sum(whisk_temp.x)/length(whisk_temp.x)
+
+    if whisk_mean > han.wt.pad_pos[1]
+        han.tracked[han.frame]=true
+        han.woi[han.frame] = deepcopy(han.wt.whiskers[han.woi_id])
+    else
+        han.tracked_r[han.frame]=true
+        han.woi_r[han.frame] = deepcopy(han.wt.whiskers[han.woi_id])
+    end
 
     #if han.discrete_auto_calc
         #make_discrete(han.wt.w_p,han.frame,han.woi[han.frame],han.d_spacing)
@@ -138,8 +147,10 @@ end
 
 function WT_reorder_whisker(whiskers::Array{Whisker1,1},pad_pos::Tuple{Float32,Float32})
 
+    println("hi")
     #order whiskers so that the last index is closest to the whisker pad
     for i=1:length(whiskers)
+
         WT_reorder_whisker(whiskers[i],pad_pos)
     end
 

@@ -95,7 +95,7 @@ end
 
 function convert_whisker_points_to_janelia(xx,yy,tracked)
 
-    woi=[WhiskerTracking.Whisker1() for i=1:length(xx)]
+    woi=[WhiskerTracking_HG.Whisker1() for i=1:length(xx)]
 
     #Assuming is stored such that first data point centered on the follicle,
     #But Janelia assumes that the last point in the array is on the follicle, so we flip here
@@ -104,7 +104,7 @@ function convert_whisker_points_to_janelia(xx,yy,tracked)
     for i=1:length(xx)
         num_points=length(xx[i])
 
-        w=WhiskerTracking.Whisker1(0,i,num_points,xx[i],yy[i],ones(Float64,num_points),ones(Float64,num_points))
+        w=WhiskerTracking_HG.Whisker1(0,i,num_points,xx[i],yy[i],ones(Float64,num_points),ones(Float64,num_points))
         woi[i]=w
     end
 
@@ -112,7 +112,7 @@ function convert_whisker_points_to_janelia(xx,yy,tracked)
 end
 
 function convert_discrete_to_janelia(preds::Array,conf_thres::Float64,pad_pos::Tuple)
-    woi=[WhiskerTracking.Whisker1() for i=1:size(preds,3)]
+    woi=[WhiskerTracking_HG.Whisker1() for i=1:size(preds,3)]
     tracked=trues(size(preds,3))
 
     myinds=falses(size(preds,1))
@@ -126,7 +126,7 @@ function convert_discrete_to_janelia(preds::Array,conf_thres::Float64,pad_pos::T
             end
         end
 
-        woi[i]=WhiskerTracking.Whisker1(0,i,num_points,preds[myinds,1,i],preds[myinds,2,i],ones(Float64,num_points),ones(Float64,num_points))
+        woi[i]=WhiskerTracking_HG.Whisker1(0,i,num_points,preds[myinds,1,i],preds[myinds,2,i],ones(Float64,num_points),ones(Float64,num_points))
 
         if num_points<5
             tracked[i]=false
@@ -142,7 +142,7 @@ function convert_discrete_to_janelia(preds::Array,conf_thres::Float64,pad_pos::T
         end
 
         if tracked[i]
-            WhiskerTracking.WT_reorder_whisker(woi[i],pad_pos)
+            WhiskerTracking_HG.WT_reorder_whisker(woi[i],pad_pos)
         end
     end
 

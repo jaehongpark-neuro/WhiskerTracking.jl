@@ -93,7 +93,7 @@ include("deep_learning/hourglass/residual.jl")
 include("deep_learning/hourglass/hourglass.jl")
 
 mutable struct NeuralNetwork
-    labels::Array{Float32,4} #Labels for training
+    labels::Array{Float32,4} #Labels for training equivalent to wp in the old one
     imgs::Array{Float32,4} #Images for training
     norm::Normalize_Parameters #Reference values to scale input images
     hg::NN #Deep Learning weights
@@ -161,6 +161,8 @@ mutable struct Tracker_Handles
 
     woi_id::Int64 #Index in array of displayed whiskers which is whisker of interest.
     woi::Array{Whisker1,1} #Array of properties for whisker of interest for every frame
+    woi_r::Array{Whisker1,1}
+
     num_whiskers::Int64
     sw::Int64 #Selected Whisker
 
@@ -168,6 +170,7 @@ mutable struct Tracker_Handles
     erase_mode::Bool
 
     tracked::BitArray{1} #Array of true/false to specify if corresponding frame has been tracked
+    tracked_r::BitArray{1}
 
     combine_mode::Int64
     partial::Whisker1

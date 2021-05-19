@@ -127,8 +127,8 @@ function JT_Best_Threshold(wt,table,num_whisk)
     #Number of whiskers that should be in frame
     target_count=convert(Int32,num_whisk)
 
-    ccall((:Measurements_Table_Estimate_Best_Threshold_For_Known_Count,WhiskerTracking.libwhisk_path),Float64,
-        (Ref{WhiskerTracking.JT_Measurements},Int32,Int32,Float64,Float64,Int32,Int32),
+    ccall((:Measurements_Table_Estimate_Best_Threshold_For_Known_Count,WhiskerTracking_HG.libwhisk_path),Float64,
+        (Ref{WhiskerTracking_HG.JT_Measurements},Int32,Int32,Float64,Float64,Int32,Int32),
         table,n_rows,n_cols,low,high,is_gt,target_count)
 end
 

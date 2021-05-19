@@ -153,7 +153,7 @@ function make_heatmap_labels(han,real_w=640,real_h=480,label_img_size=64)
             this_y = d_points[j,2,i] / real_h * label_img_size
 
             if (this_x !=0.0)&(this_y != 0.0)
-                labels[:,:,j,i] = WhiskerTracking.gaussian_2d(1.0:1.0:label_img_size,1.0:1.0:label_img_size,this_y,this_x)
+                labels[:,:,j,i] = WhiskerTracking_HG.gaussian_2d(1.0:1.0:label_img_size,1.0:1.0:label_img_size,this_y,this_x)
                 labels[:,:,j,i] = labels[:,:,j,i] ./ maximum(labels[:,:,j,i])
             end
         end
@@ -169,7 +169,7 @@ function get_labeled_frames(han,out_hw=256,h=480,w=640,frame_rate=25)
     temp=zeros(UInt8,w,h)
     for i=1:length(han.frame_list)
         frame_time = han.frame_list[i] / frame_rate
-        WhiskerTracking.load_single_frame(frame_time,temp,han.wt.vid_name)
+        WhiskerTracking_HG.load_single_frame(frame_time,temp,han.wt.vid_name)
         imgs[:,:,1,i]=Images.imresize(temp',(out_hw,out_hw))
     end
     imgs

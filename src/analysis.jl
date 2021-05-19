@@ -113,8 +113,8 @@ end
 
 function get_ip_curv(xx,yy,woi,p1,p2)
 
-    ip_1=WhiskerTracking.culm_dist(xx,yy,p1)
-    ip_2=WhiskerTracking.culm_dist(xx,yy,p2)
+    ip_1=WhiskerTracking_HG.culm_dist(xx,yy,p1)
+    ip_2=WhiskerTracking_HG.culm_dist(xx,yy,p2)
 
     new_wx=xx[ip_2:ip_1]
     new_wy=yy[ip_2:ip_1]
@@ -126,7 +126,7 @@ function get_ip_curv(xx,yy,woi,p1,p2)
     new_mywhiskers.thick=ones(Float32,length(new_wx))
     new_mywhiskers.scores=ones(Float32,length(new_wx))
 
-    mymeas=WhiskerTracking.JT_measure(new_mywhiskers,400.0f0,50.0f0)
+    mymeas=WhiskerTracking_HG.JT_measure(new_mywhiskers,400.0f0,50.0f0)
     unsafe_wrap(Array,mymeas.data,8)[4]
 
 end

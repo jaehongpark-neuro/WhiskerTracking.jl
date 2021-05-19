@@ -25,8 +25,8 @@ function dlc_remove_bad_whiskers(xx,yy,thres,tracked)
 
     for i=1:length(xx)
         if length(xx[i])>2
-            i_p1=WhiskerTracking.culm_dist(xx[i],yy[i],30.0)
-            i_p2=WhiskerTracking.culm_dist(xx[i],yy[i],80.0)
+            i_p1=WhiskerTracking_HG.culm_dist(xx[i],yy[i],30.0)
+            i_p2=WhiskerTracking_HG.culm_dist(xx[i],yy[i],80.0)
 
             dx[i,1]=xx[i][i_p1]
             dx[i,2]=xx[i][i_p2]
@@ -35,10 +35,10 @@ function dlc_remove_bad_whiskers(xx,yy,thres,tracked)
         end
     end
 
-    smooth_dx[:,1]=WhiskerTracking.smooth(dx[:,1],15)
-    smooth_dx[:,2]=WhiskerTracking.smooth(dx[:,2],15)
-    smooth_dy[:,1]=WhiskerTracking.smooth(dy[:,1],15)
-    smooth_dy[:,2]=WhiskerTracking.smooth(dy[:,2],15)
+    smooth_dx[:,1]=WhiskerTracking_HG.smooth(dx[:,1],15)
+    smooth_dx[:,2]=WhiskerTracking_HG.smooth(dx[:,2],15)
+    smooth_dy[:,1]=WhiskerTracking_HG.smooth(dy[:,1],15)
+    smooth_dy[:,2]=WhiskerTracking_HG.smooth(dy[:,2],15)
 
     for i=1:length(xx)
 

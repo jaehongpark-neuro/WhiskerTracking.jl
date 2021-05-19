@@ -1,5 +1,5 @@
 
-module WhiskerTracking
+module WhiskerTracking_HG
 
 #Standard Library
 using Statistics,Random,Distributed,SharedArrays,DelimitedFiles,LinearAlgebra

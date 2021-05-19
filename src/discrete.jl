@@ -62,15 +62,26 @@ end
 function make_discrete_all_whiskers(han,spacing=15.0)
 
     #Make sure that whiskers are ordered with follicle at base
-    WhiskerTracking.WT_reorder_whisker(han.woi,han.wt.pad_pos)
+    WhiskerTracking_HG.WT_reorder_whisker(han.woi,han.wt.pad_pos)
 
     #Find longest whisker
     (d_longest,dl_i)=longest_whisker(han.woi)
 
     num_points = round(Int,div(d_longest, spacing))
 
+    #Make sure that whiskers are ordered with follicle at base
+    WhiskerTracking_HG.WT_reorder_whisker(han.woi_r,han.wt.pad_pos)
+
+    #Find longest whisker
+    (d_longest_r,dl_i_r)=longest_whisker(han.woi_r)
+
+    num_points_r = round(Int,div(d_longest_r, spacing))
+
     #Divide into x points
     d_points=make_woi_discrete(han.woi,num_points,spacing)
+    d_points_r=make_woi_discrete(han.woi_r,num_points_r,spacing)
+
+    final_d_points = vcat(d_points,d_points_r)
 end
 
 function longest_whisker(woi)

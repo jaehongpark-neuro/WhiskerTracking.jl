@@ -25,15 +25,17 @@ function make_gui()
 
     if VERSION > v"0.7-"
         woi_array = Array{Whisker1,1}(undef,1)
+        woi_array_r = Array{Whisker1,1}(undef,1)
     else
         woi_array = Array{Whisker1,1}(1)
+        woi_array_r = Array{Whisker1,1}(1)
     end
 
     these_paths = Save_Paths("",false)
 
     handles = Tracker_Handles(1,b,2,c,zeros(UInt32,640,480),
-    zeros(UInt8,480,640),zeros(UInt8,640,480),0,woi_array,1,1,
-    false,false,falses(1),0,Whisker1(),false,false,false,
+    zeros(UInt8,480,640),zeros(UInt8,640,480),0,woi_array,woi_array_r,1,1,
+    false,false,falses(1),falses(1),0,Whisker1(),false,false,false,
     falses(0),Array{Int64,1}(),wt,true,2,[1],1,
     c_widgets,falses(1),zeros(Float32,1,2),zeros(UInt8,640,480),1,
     zeros(Float64,1,1),zeros(Float64,1,1),falses(1,1),false,falses(1),
@@ -329,6 +331,7 @@ function add_frame_cb(w::Ptr,user_data::Tuple{Tracker_Handles})
 
     new_frame=han.displayed_frame
 
+
     try
         if isempty(findall(han.frame_list.==new_frame))
 
@@ -341,11 +344,12 @@ function add_frame_cb(w::Ptr,user_data::Tuple{Tracker_Handles})
 
             #add whisker WOI
             insert!(han.woi,frame_location,Whisker1())
-
+            insert!(han.woi_r,frame_location,Whisker1())
             #insert!(han.wt.all_whiskers,frame_location,Array{Whisker1,1}())
 
             #tracked array
             insert!(han.tracked,frame_location,false)
+            insert!(han.tracked_r,frame_location,false)
 
             #pole present
             insert!(han.pole_present,frame_location,false)
@@ -362,6 +366,7 @@ function add_frame_cb(w::Ptr,user_data::Tuple{Tracker_Handles})
                 end
             end
             han.pole_loc = new_pole_loc
+
 
             #Change frame list spin button maximum number and current index
             set_gtk_property!(han.b["labeled_frame_adj"],:upper,length(han.frame_list))
@@ -663,7 +668,7 @@ function whisker_select_cb(widget::Ptr,param_tuple,user_data::Tuple{Tracker_Hand
                 if (m_x>han.wt.whiskers[i].x[j]-5.0)&(m_x<han.wt.whiskers[i].x[j]+5.0)
                     if (m_y>han.wt.whiskers[i].y[j]-5.0)&(m_y<han.wt.whiskers[i].y[j]+5.0)
                         han.woi_id = i
-                        han.tracked[han.frame]=true
+                        # han.tracked[han.frame]=true
                         assign_woi(han)
                         redraw_all(han)
                         break
@@ -797,6 +802,24 @@ function plot_whiskers(han::Tracker_Handles)
             draw_discrete(han)
         end
     end
+
+    if (han.tracked_r[han.frame])&(han.frame_list[han.frame]==han.displayed_frame)
+        set_source_rgb(ctx,1.0,1.0,0.0)
+
+        move_to(ctx,han.woi_r[han.frame].x[1],han.woi_r[han.frame].y[1])
+        for i=2:han.woi_r[han.frame].len
+            line_to(ctx,han.woi_r[han.frame].x[i],han.woi_r[han.frame].y[i])
+        end
+        stroke(ctx)
+
+        if view_discrete(han.b)
+            draw_discrete(han)
+        end
+    end
+
+
+
+
 
     if show_tracked(han.b)
         #draw_tracked_whisker(han)
